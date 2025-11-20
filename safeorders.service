@@ -1,0 +1,30 @@
+[Unit]
+Description=SafeOrders Application
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/srv/safeorders
+EnvironmentFile=/srv/safeorders/.env
+
+# Start the application
+ExecStart=/srv/safeorders/venv/bin/gunicorn \
+    -b 0.0.0.0:8080 \
+    --workers 2 \
+    --timeout 60 \
+    --access-logfile /var/log/safeorders-access.log \
+    --error-logfile /var/log/safeorders-error.log \
+    --log-level info \
+    app:app
+
+# Restart policy
+Restart=always
+RestartSec=5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
